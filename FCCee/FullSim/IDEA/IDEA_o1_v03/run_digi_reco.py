@@ -1,13 +1,16 @@
 import os
-
 from Gaudi.Configuration import *
 
-# Loading the input SIM file, defining output file
+################## Create input and output file names
+Input_File = "/home/jona/UZH/Key4hep/FCC-config/FCCee/FullSim/IDEA/IDEA_o1_v03/output/IDEA_sim.root"
+Output_File = "output/IDEA_sim_digi_reco.root"
+
+################## Loading the input SIM file, defining output file
 from k4FWCore import IOSvc
 from Configurables import EventDataSvc
 io_svc = IOSvc("IOSvc")
-io_svc.Input = "IDEA_sim.root"
-io_svc.Output = "IDEA_sim_digi_reco.root"
+io_svc.Input = Input_File
+io_svc.Output = Output_File
 
 
 ################## Simulation setup
@@ -21,7 +24,7 @@ detectors_to_use=[
                   ]
 # prefix all xmls with path_to_detector
 geoservice.detectors = [os.path.join(path_to_detector, _det) for _det in detectors_to_use]
-geoservice.OutputLevel = INFO
+geoservice.OutputLevel = WARNING
 
 ############### Vertex Digitizer
 from Configurables import DDPlanarDigi
