@@ -3,13 +3,15 @@ from g4units import mm, GeV, MeV
 
 ###################################
 # user options
-simulateCalo = True # set to False to skip the calo SD action
+simulateCalo = False # set to False to skip the calo SD action
 ###################################
 
 SIM = DD4hepSimulation()
 
 ## The compact XML file, or multiple compact files, if the last one is the closer.
-SIM.compactFile = ["../FCCee/IDEA/compact/IDEA_o1_v03/IDEA_o1_v03.xml"]
+## SIM.compactFile = ["../FCCee/IDEA/compact/IDEA_o1_v03/IDEA_o1_v03.xml"]
+SIM.compactFile = ["FCCee/IDEA/compact/IDEA_o1_v03/IDEA_o1_v03_OnlyTracker_15um.xml"]
+
 ## Lorentz boost for the crossing angle, in radian!
 SIM.crossingAngleBoost = 0.015
 SIM.enableDetailedShowerMode = False
@@ -205,7 +207,7 @@ SIM.filter.mapDetFilter["DCH_v2"] = "edep0"
 SIM.filter.mapDetFilter["Muon-System"] = "edep0"
 
 ##  default filter for tracking sensitive detectors; this is applied if no other filter is used for a tracker
-SIM.filter.tracker = "edep1kev"
+SIM.filter.tracker = "edep0"
 
 
 ################################################################################
@@ -259,7 +261,20 @@ SIM.guineapig.particlesPerEvent = "-1"
 ## Configuration for the DDG4 ParticleGun
 ################################################################################
 
-##  direction of the particle gun, 3 vector
+## Total energy (including mass) for the particle gun.
+##
+## If not None, it will overwrite the setting of momentumMin and momentumMax
+SIM.gun.energy = 10.0 * GeV
+
+## Momentum range when using distribution (default = 0.0)
+# SIM.gun.momentumMin = 0.0
+# SIM.gun.momentumMax = 10000.0
+
+SIM.gun.multiplicity = 1
+SIM.gun.particle = "mu-"
+
+##  position and direction of the particle gun, 3 vector
+SIM.gun.position = (0.0, 0.0, 0.0)
 SIM.gun.direction = (1.0, 0.1, 0.1)
 
 ## choose the distribution of the random direction for theta
@@ -268,54 +283,29 @@ SIM.gun.direction = (1.0, 0.1, 0.1)
 ##
 ##     'uniform' is the default distribution, flat in theta
 ##     'cos(theta)' is flat in cos(theta)
-##     'eta', or 'pseudorapidity' is flat in pseudorapity
+##     'eta', or 'pseudorapidity' is flat in pseudorapidity
 ##     'ffbar' is distributed according to 1+cos^2(theta)
 ##
 ##     Setting a distribution will set isotrop = True
-##
-SIM.gun.distribution = None
-
-## Total energy (including mass) for the particle gun.
-##
-## If not None, it will overwrite the setting of momentumMin and momentumMax
-SIM.gun.energy = 10.0 * GeV
-
-## Maximal pseudorapidity for random distibution (overrides thetaMin)
-SIM.gun.etaMax = None
-
-## Minimal pseudorapidity for random distibution (overrides thetaMax)
-SIM.gun.etaMin = None
+SIM.gun.distribution = "cos(theta)"
 
 ##  isotropic distribution for the particle gun
 ##
 ##     use the options phiMin, phiMax, thetaMin, and thetaMax to limit the range of randomly distributed directions
 ##     if one of these options is not None the random distribution will be set to True and cannot be turned off!
-##
-SIM.gun.isotrop = False
+# SIM.gun.isotrop = False
 
-## Maximal momentum when using distribution (default = 0.0)
-# SIM.gun.momentumMax = 10000.0
-
-## Minimal momentum when using distribution (default = 0.0)
-# SIM.gun.momentumMin = 0.0
-SIM.gun.multiplicity = 1
-SIM.gun.particle = "e-"
-
-## Maximal azimuthal angle for random distribution
+## Azimuthal angle range for random distribution
+SIM.gun.phiMin = None
 SIM.gun.phiMax = None
 
-## Minimal azimuthal angle for random distribution
-SIM.gun.phiMin = None
-
-##  position of the particle gun, 3 vector
-SIM.gun.position = (0.0, 0.0, 0.0)
-
-## Maximal polar angle for random distribution
+## Polar angle range for random distribution
+SIM.gun.thetaMin = None
 SIM.gun.thetaMax = None
 
-## Minimal polar angle for random distribution
-SIM.gun.thetaMin = None
-
+## Pseudorapidity range for random distibution (overrides thetaMin,thetaMax)
+SIM.gun.etaMin = None
+SIM.gun.etaMax = None
 
 ################################################################################
 ## Configuration for the hepmc3 InputFiles
@@ -549,7 +539,7 @@ SIM.physics.alternativeDecayStatuses = set()
 SIM.physics.decays = False
 
 ## The name of the Geant4 Physics list.
-SIM.physics.list = "FTFP_BERT"
+SIM.physics.list = "FTFP_BERT_EMZ"
 
 ##  location of particle.tbl file containing extra particles and their lifetime information
 ##
@@ -566,7 +556,7 @@ SIM.physics.pdgfile = None
 ##     Set printlevel to DEBUG to see a printout of all range cuts,
 ##     but this only works if range cut is not "None"
 ##
-SIM.physics.rangecut = None
+SIM.physics.rangecut = 0.05*mm
 
 ## Set of PDG IDs that will not be passed from the input record to Geant4.
 ##
@@ -700,7 +690,12 @@ SIM.random.type = None
 ################################################################################
 
 ## List of UI commands to run during the 'Configure' phase.
-SIM.ui.commandsConfigure = []
+SIM.ui.commandsConfigure = [
+    "/cuts/setLowEdge 50 eV",
+    "/process/em/lowestElectronEnergy 1 eV",
+    "/process/em/auger true" ,
+    "/process/em/deexcitationIgnoreCut true"
+]
 
 ## List of UI commands to run during the 'Initialize' phase.
 SIM.ui.commandsInitialize = []
@@ -713,3 +708,12 @@ SIM.ui.commandsPreRun = []
 
 ## List of UI commands to run during the 'Terminate' phase.
 SIM.ui.commandsTerminate = []
+
+
+
+# -- Jona's Changes --
+
+# CommandsConfigure = ["/process/em/AddPAIRegion all SiO2Region PAI"]
+# SIM.ui.commandsConfigure = CommandsConfigure
+
+SIM.physics.rangecut = 0.7 * mm
