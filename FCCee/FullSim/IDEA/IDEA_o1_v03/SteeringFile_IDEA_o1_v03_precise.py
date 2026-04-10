@@ -10,14 +10,14 @@ SIM = DD4hepSimulation()
 
 ## The compact XML file, or multiple compact files, if the last one is the closer.
 ## SIM.compactFile = ["../FCCee/IDEA/compact/IDEA_o1_v03/IDEA_o1_v03.xml"]
-SIM.compactFile = ["FCCee/IDEA/compact/IDEA_o1_v03/IDEA_o1_v03_OnlyTracker_15um.xml"]
+SIM.compactFile = []
 
 ## Lorentz boost for the crossing angle, in radian!
-SIM.crossingAngleBoost = 0.015
+SIM.crossingAngleBoost = 0.
 SIM.enableDetailedShowerMode = False
 SIM.enableG4GPS = False
 SIM.enableG4Gun = False
-SIM.enableGun = True
+SIM.enableGun = False
 ## InputFiles for simulation .stdhep, .slcio, .HEPEvt, .hepevt, .pairs, .hepmc, .hepmc.gz, .hepmc.xz, .hepmc.bz2, .hepmc3, .hepmc3.gz, .hepmc3.xz, .hepmc3.bz2, .hepmc3.tree.root files are supported
 SIM.inputFiles = []
 ## Macro file to execute for runType 'run' or 'vis'
@@ -25,9 +25,9 @@ SIM.macroFile = ""
 ## number of events to simulate, used in batch mode
 SIM.numberOfEvents = 10
 ## Outputfile from the simulation: .slcio, edm4hep.root and .root output files are supported
-SIM.outputFile = "testIDEA_o1_v03.root"
+SIM.outputFile = "test.root"
 ## Physics list to use in simulation
-SIM.physicsList = "FTFP_BERT"
+SIM.physicsList = "FTFP_BERT_EMZ"
 ## Verbosity use integers from 1(most) to 7(least) verbose
 ## or strings: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL, ALWAYS
 SIM.printLevel = 3
@@ -256,7 +256,6 @@ SIM.geometry.enablePrintSensitives = False
 ##
 SIM.guineapig.particlesPerEvent = "-1"
 
-
 ################################################################################
 ## Configuration for the DDG4 ParticleGun
 ################################################################################
@@ -275,7 +274,7 @@ SIM.gun.particle = "mu-"
 
 ##  position and direction of the particle gun, 3 vector
 SIM.gun.position = (0.0, 0.0, 0.0)
-SIM.gun.direction = (1.0, 0.1, 0.1)
+SIM.gun.direction = (1.0, 0.0, 0.0)
 
 ## choose the distribution of the random direction for theta
 ##
@@ -287,7 +286,7 @@ SIM.gun.direction = (1.0, 0.1, 0.1)
 ##     'ffbar' is distributed according to 1+cos^2(theta)
 ##
 ##     Setting a distribution will set isotrop = True
-SIM.gun.distribution = "cos(theta)"
+SIM.gun.distribution = None
 
 ##  isotropic distribution for the particle gun
 ##
@@ -538,9 +537,6 @@ SIM.physics.alternativeDecayStatuses = set()
 ##
 SIM.physics.decays = False
 
-## The name of the Geant4 Physics list.
-SIM.physics.list = "FTFP_BERT_EMZ"
-
 ##  location of particle.tbl file containing extra particles and their lifetime information
 ##
 ##     For example in $DD4HEP/examples/DDG4/examples/particle.tbl
@@ -694,7 +690,7 @@ SIM.ui.commandsConfigure = [
     "/cuts/setLowEdge 50 eV",
     "/process/em/lowestElectronEnergy 1 eV",
     "/process/em/auger true" ,
-    "/process/em/deexcitationIgnoreCut true"
+    "/process/em/deexcitationIgnoreCut true",
 ]
 
 ## List of UI commands to run during the 'Initialize' phase.
@@ -708,12 +704,3 @@ SIM.ui.commandsPreRun = []
 
 ## List of UI commands to run during the 'Terminate' phase.
 SIM.ui.commandsTerminate = []
-
-
-
-# -- Jona's Changes --
-
-# CommandsConfigure = ["/process/em/AddPAIRegion all SiO2Region PAI"]
-# SIM.ui.commandsConfigure = CommandsConfigure
-
-SIM.physics.rangecut = 0.7 * mm
